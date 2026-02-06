@@ -25,6 +25,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
+          cd frontend
           npm install
           npm run build --if-present
           npm run test --if-present
@@ -52,4 +53,5 @@ jobs:
           app-name: 'healthcare-iot-webapp'
           slot-name: 'Production'
           package: .
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_13B1EC840B0D4B01B77E58A13778B3BE }}
