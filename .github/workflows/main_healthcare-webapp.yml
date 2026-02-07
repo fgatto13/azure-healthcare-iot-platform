@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend/build   # Only upload the build folder
+          path: frontend/dist   # Only upload the build folder
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,15 +42,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build
-          path: build   # Extract artifact here
+          path: dist   # Extract artifact here
 
       - name: Deploy React frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'healthcare-webapp'
           slot-name: 'Production'
-          package: build  # Must point to folder containing index.html
+          package: dist  # Must point to folder containing index.html
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0D3D17D1FFC74893AFC7A338BF07B871 }}
+
 
 
 
