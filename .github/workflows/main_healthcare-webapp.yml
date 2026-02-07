@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - healthcare-webapp
 on:
   push:
     branches:
-      - main
+      - main/frontend
   workflow_dispatch:
 
 jobs:
@@ -52,4 +52,5 @@ jobs:
           app-name: 'healthcare-webapp'
           slot-name: 'Production'
           package: .
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0D3D17D1FFC74893AFC7A338BF07B871 }}
