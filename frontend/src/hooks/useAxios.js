@@ -2,7 +2,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-const useAxios = () => {
+export const useAxios = () => {
     const [response, setResponse] = useState(null)  // represents our response, default value is null
     const [error, setError] = useState("")          // represents any error msgs, default ""
     const [loading, setLoading] = useState(false)   // represents the request status, def false
@@ -70,5 +70,3 @@ const useAxios = () => {
         fetchData
     }
 };
-
-export default useAxios
