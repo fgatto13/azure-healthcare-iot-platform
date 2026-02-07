@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: ./frontend
+          path: frontend/build
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,8 +52,9 @@ jobs:
         with:
           app-name: 'healthcare-webapp'
           slot-name: 'Production'
-          package: ./frontend
+          package: frontend/build
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0D3D17D1FFC74893AFC7A338BF07B871 }}
+
 
 
