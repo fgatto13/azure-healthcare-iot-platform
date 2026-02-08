@@ -5,5 +5,12 @@ import {Dashboard} from "./Dashboard";
 export const AppContent = () => {
   const { isAuthenticated } = useMsalAuth();
 
-  return isAuthenticated ? <Dashboard /> : <Login />;
+  return (
+  <>
+    <Login />
+    {isAuthenticated &&
+    <Dashboard/>
+    }
+  </>
+  );
 };
