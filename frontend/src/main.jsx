@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import {App} from './App';
 import { PublicClientApplication, EventType } from '@azure/msal-browser';
 import { msalConfig } from './utils/authConfig';
 
