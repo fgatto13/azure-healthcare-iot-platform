@@ -26,6 +26,11 @@ jobs:
         run: |
           npm install --prefix frontend
           npm run build --prefix frontend
+          env:
+            VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
+            VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+            VITE_TENANT_ID: ${{ secrets.VITE_TENANT_ID }}
+            VITE_API_ID: ${{ secrets.VITE_API_ID }}
 
       - name: Upload frontend build artifact
         run: |
@@ -59,6 +64,7 @@ jobs:
           package: deploy_folder  # Contains index.html at root
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0D3D17D1FFC74893AFC7A338BF07B871 }}
           clean: True
+
 
 
 
