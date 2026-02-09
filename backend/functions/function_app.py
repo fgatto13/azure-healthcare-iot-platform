@@ -24,10 +24,7 @@ def get_patient(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
 
-    # Placeholder for Entra ID token validation:
-    # - it'll extract auth header
-    # - validate JWT
-    # - check role
+    # Entra ID token validation
     auth_header = req.headers.get("Authorization")
     log_auth_heaeder(auth_header)
 
@@ -58,7 +55,11 @@ def list_patients(req: func.HttpRequest) -> func.HttpResponse:
 
     # validates Entra ID
     auth_header = req.headers.get("Authorization")
-    log_auth_heaeder(auth_header)
+    assert auth_header is not None
+    token = auth_header.split(" ", 1)[1]
+    claims = parse_jwt(token)
+    role = claims.get("roles")
+    logging.info(role)
 
     # gets data from FHIR
 
@@ -98,6 +99,18 @@ def list_patients(req: func.HttpRequest) -> func.HttpResponse:
 def update_patient(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("update_patient endpoint called")
 
+    # PLACEHOLDER: Entra ID validation
+    auth_header = req.headers.get("Authorization")
+    log_auth_heaeder(auth_header)
+    assert auth_header is not None
+    token = auth_header.split(" ", 1)[1]
+    claims = parse_jwt(token)
+    role = claims.get("roles") or []
+    logging.info(role)
+
+    if not any(r in role for r in ["User.Admin", "User.Doctor"]):
+        return func.HttpResponse("Forbidden", status_code=403)
+
     patient_id = req.route_params.get("patient_id")
 
     if not patient_id:
@@ -126,10 +139,6 @@ def update_patient(req: func.HttpRequest) -> func.HttpResponse:
             "Patient ID mismatch between URL and body",
             status_code=400
         )
-
-    # PLACEHOLDER: Entra ID validation
-    auth_header = req.headers.get("Authorization")
-    log_auth_heaeder(auth_header)
 
     # PLACEHOLDER: FHIR PUT
     # PUT /Patient/{id}
@@ -168,10 +177,18 @@ def create_patient(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
 
-    # PLACEHOLDER: Entra ID validation
+    # Entra ID validation
     # - Ensure role = Doctor / Admin
     auth_header = req.headers.get("Authorization")
     log_auth_heaeder(auth_header)
+    assert auth_header is not None
+    token = auth_header.split(" ", 1)[1]
+    claims = parse_jwt(token)
+    role = claims.get("roles") or []
+    logging.info(role)
+
+    if not any(r in role for r in ["User.Admin", "User.Doctor"]):
+        return func.HttpResponse("Forbidden", status_code=403)
 
     # PLACEHOLDER: FHIR POST
     # This will eventually call:

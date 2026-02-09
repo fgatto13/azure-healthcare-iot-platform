@@ -11,25 +11,10 @@ import {
 import { useMsalAuth } from "../hooks/useMsalAuth";
 
 export const Dashboard = () => {
-  const { getAccessToken, isAuthenticated } = useMsalAuth();
+  const { getAccessToken } = useMsalAuth();
   const { response, error, loading, fetchData } = useAxios(getAccessToken);
   const [patientId, setPatientId] = useState("");
-
-  // to make sure that the accessToken gets retrieved and is correct
-  useEffect(() => {
-    const logToken = async () => {
-      if (!isAuthenticated) return;
-
-      try {
-        const token = await getAccessToken();
-        console.log("ACCESS TOKEN:", token);
-      } catch (err) {
-        console.error("Failed to get access token:", err);
-      }
-    };
-
-    logToken();
-  }, [isAuthenticated, getAccessToken]);
+  const { claims } = useMsalAuth();
 
   // Extract patients from response
   const patients =
@@ -44,26 +29,34 @@ export const Dashboard = () => {
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>An error occurred: {error}</p>}
-      <div>
-
         <Container className="flex flex-col justify-center content-center gap-3">
-        <Button 
-          onClick={() => fetchData(getPatients())}>
-          Fetch all patients
-        </Button>
-        <input
-          type="text"
-          placeholder="Patient ID"
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-          className="border-2 border-blue-400 rounded-sm p-2"
-          />
-        <Button 
-          onClick={() => fetchData(getPatientById(patientId))}>Fetch patient by ID</Button>
+          {claims.roles?.includes('User.Admin') && (
+            <Button onClick={() => fetchData(createPatient())}>
+              Create New Patient
+            </Button>
+          )}
+          {claims.roles?.some(r => ['User.Admin', 'User.Doctor'].includes(r)) && (
+            <Button onClick={() => fetchData(updatePatient())}>
+              Create / Update Patient
+            </Button>
+          )}
+          <Button 
+            onClick={() => fetchData(getPatients())}>
+            Fetch all patients
+          </Button>
+          <input
+            type="text"
+            placeholder="Patient ID"
+            value={patientId}
+            onChange={(e) => setPatientId(e.target.value)}
+            className="border-2 border-blue-400 rounded-sm p-2"
+            />
+          <Button 
+            onClick={() => fetchData(getPatientById(patientId))}>Fetch patient by ID
+          </Button>
         </Container>
-      </div>
 
-      <div>
+      <div className="grid gap-3 p-2">
         {patients.length > 0 ? (
           patients.map((p) => <PatientCard key={p.id} patient={p} />)
         ) : (
