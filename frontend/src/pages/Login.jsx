@@ -1,8 +1,10 @@
 import { Button, Container } from "react-bootstrap";
 import { useMsalAuth } from "../hooks/useMsalAuth";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export const Login = () => {
-  const { instance, account, isAuthenticated } = useMsalAuth();
+  const { instance, account, isAuthenticated, inProgress } = useMsalAuth();
 
   const login = () => {
     instance.loginRedirect().catch(console.error);
@@ -11,6 +13,10 @@ export const Login = () => {
   const logout = () => {
     instance.logoutRedirect().catch(console.error);
   };
+
+  if (inProgress !== "none") {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return (

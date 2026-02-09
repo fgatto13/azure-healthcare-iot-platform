@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAxios } from "../hooks/useAxios";
 import { PatientCard } from "../components/common/PatientCard";
+import { Button, Container } from "react-bootstrap";
 import {
   getPatients,
   getPatientById,
@@ -19,34 +20,38 @@ export const Dashboard = () => {
       ? [response]
       : [];
   return (
-    <>
+    <div>
       <h1>Dashboard</h1>
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>An error occurred: {error}</p>}
 
-      <div style={{ marginBottom: "16px" }}>
-        <button onClick={() => fetchData(getPatients())}>
-          Fetch all patients
-        </button>
+      <div>
 
+        <Container className="flex flex-col justify-center content-center gap-3">
+        <Button 
+          onClick={() => fetchData(getPatients())}>
+          Fetch all patients
+        </Button>
         <input
           type="text"
           placeholder="Patient ID"
           value={patientId}
           onChange={(e) => setPatientId(e.target.value)}
-          style={{ marginRight: "8px" }}
-        />
-        <button onClick={() => fetchData(getPatientById(patientId))}>Fetch patient by ID</button>
+          className="border-2 border-blue-400 rounded-sm p-2"
+          />
+        <Button 
+          onClick={() => fetchData(getPatientById(patientId))}>Fetch patient by ID</Button>
+        </Container>
       </div>
 
       <div>
         {patients.length > 0 ? (
           patients.map((p) => <PatientCard key={p.id} patient={p} />)
         ) : (
-          <p>No patients to display.</p>
+          <p className="p-2">No patients to display.</p>
         )}
       </div>
-    </>
+    </div>
   );
 }
