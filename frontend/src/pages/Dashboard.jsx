@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAxios } from "../hooks/useAxios";
 import { PatientCard } from "../components/common/PatientCard";
 import { Button, Container } from "react-bootstrap";
@@ -8,10 +8,29 @@ import {
   createPatient,
   updatePatient,
 } from "../services/api.services";
+import { useMsalAuth } from "../hooks/useMsalAuth";
 
 export const Dashboard = () => {
-  const { response, error, loading, fetchData } = useAxios();
+  const { getAccessToken, isAuthenticated } = useMsalAuth();
+  const { response, error, loading, fetchData } = useAxios(getAccessToken);
   const [patientId, setPatientId] = useState("");
+
+  // to make sure that the accessToken gets retrieved and is correct
+  useEffect(() => {
+    const logToken = async () => {
+      if (!isAuthenticated) return;
+
+      try {
+        const token = await getAccessToken();
+        console.log("ACCESS TOKEN:", token);
+      } catch (err) {
+        console.error("Failed to get access token:", err);
+      }
+    };
+
+    logToken();
+  }, [isAuthenticated, getAccessToken]);
+
   // Extract patients from response
   const patients =
     response?.resourceType === "Bundle"
@@ -25,7 +44,6 @@ export const Dashboard = () => {
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>An error occurred: {error}</p>}
-
       <div>
 
         <Container className="flex flex-col justify-center content-center gap-3">

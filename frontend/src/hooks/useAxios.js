@@ -1,72 +1,62 @@
 // Data fetching hook with Axios
-import axios from "axios"
-import { useEffect, useState } from "react"
+import axios from "axios";
+import { useEffect, useState, useRef } from "react";
 
-export const useAxios = () => {
-    const [response, setResponse] = useState(null)  // represents our response, default value is null
-    const [error, setError] = useState("")          // represents any error msgs, default ""
-    const [loading, setLoading] = useState(false)   // represents the request status, def false
+export const useAxios = (getAccessToken) => {
+    const [response, setResponse] = useState(null);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const controllerRef = useRef(null);
 
     const axiosInstance = axios.create({
-        baseURL: import.meta.env.VITE_BASE_URL
-    })
+        baseURL: import.meta.env.VITE_BASE_URL,
+    });
 
-    // we can also add interceptors to do smth before or after the req/resp
     axiosInstance.interceptors.request.use(
-    (config)=>{
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    })
+        async (config) => {
+            if (!getAccessToken) return config;
+            const token = await getAccessToken();
+            if (!token) {
+                // Cancel the request explicitly
+                return Promise.reject(
+                    new Error("No access token available")
+                );
+            }
 
-    axiosInstance.interceptors.response.use(
-    (response)=>{
-        return response;
-    },
-    (error) => {
-        return Promise.reject(error);
-    })
+            config.headers.Authorization = `Bearer ${token}`;
+            return config;
+        },
+            (error) => Promise.reject(error)
+        );
 
-    // if the component that is using the Axios call unmounts, we should also abort the axios call
-    let controller = new AbortController()
-    // to check when the component unmounts, we use the useEffect hook to create a cleanup funct
-    // the useEffect hook will be run on the caller component
-    useEffect(() =>{
-        return () => controller?.abort()    // we first want to check that the controller is not null
-    }, [])
+    useEffect(() => {
+        return () => controllerRef.current?.abort();
+    }, []);
 
-    const fetchData = async({url, method, data={}, params = {}}) => {
-        setLoading(true)    // the request has been initiated
+    const fetchData = async ({ url, method, data = {}, params = {} }) => {
+        setLoading(true);
+        controllerRef.current?.abort();
+        controllerRef.current = new AbortController();
 
-        controller.abort()
-        controller = new AbortController()  // this will create a new abort controller for our req
-        try{
+        try {
             const result = await axiosInstance({
                 url,
                 method,
                 data,
                 params,
-                signal: controller.signal
-            });
-            // if the request is successful, set the response as the received data
-            setResponse(result.data)    
-            setError("")
-        } catch(error) {
-            if(axios.isCancel(error)){
-                console.error("Request cancelled: ", error.message)
+                signal: controllerRef.current.signal,
+        });
+        setResponse(result.data);
+        setError("");
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                console.error("Request cancelled:", error.message);
             }
-            setError(error.response ? error.response.data: error.message)
-            setResponse(null)
+            setError(error.response ? error.response.data : error.message);
+            setResponse(null);
         } finally {
-            // so that we always conclude the loading
-            setLoading(false)
+            setLoading(false);
         }
     };
-    return {
-        response,
-        error,
-        loading,
-        fetchData
-    }
+    return { response, error, loading, fetchData };
 };
