@@ -6,6 +6,7 @@ import azure.functions as func
 import logging
 import json
 import uuid # this module allows for the creation of unique patient IDs
+from helper import parse_jwt, log_auth_heaeder
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -27,6 +28,8 @@ def get_patient(req: func.HttpRequest) -> func.HttpResponse:
     # - it'll extract auth header
     # - validate JWT
     # - check role
+    auth_header = req.headers.get("Authorization")
+    log_auth_heaeder(auth_header)
 
     # template for the patient from FHIR call
     patient_data = {
@@ -54,6 +57,8 @@ def list_patients(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("list_patients endpoint called")
 
     # validates Entra ID
+    auth_header = req.headers.get("Authorization")
+    log_auth_heaeder(auth_header)
 
     # gets data from FHIR
 
@@ -123,6 +128,8 @@ def update_patient(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     # PLACEHOLDER: Entra ID validation
+    auth_header = req.headers.get("Authorization")
+    log_auth_heaeder(auth_header)
 
     # PLACEHOLDER: FHIR PUT
     # PUT /Patient/{id}
@@ -163,6 +170,8 @@ def create_patient(req: func.HttpRequest) -> func.HttpResponse:
 
     # PLACEHOLDER: Entra ID validation
     # - Ensure role = Doctor / Admin
+    auth_header = req.headers.get("Authorization")
+    log_auth_heaeder(auth_header)
 
     # PLACEHOLDER: FHIR POST
     # This will eventually call:
