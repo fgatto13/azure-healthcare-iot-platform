@@ -15,6 +15,10 @@ jobs:
     permissions:
       contents: read #This is required for actions/checkout
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: frontend/build
 
   deploy:
     runs-on: ubuntu-latest
@@ -44,6 +48,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
+          path: build
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -51,5 +56,6 @@ jobs:
         with:
           app-name: 'healthcare-iot-wa'
           slot-name: 'Production'
-          package: .
+          package: build
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CAE0EFA5B89F42BE9F04484D41247F85 }}
