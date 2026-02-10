@@ -4,8 +4,8 @@ import { LogLevel } from "@azure/msal-browser";
      auth: {
          clientId: `${import.meta.env.VITE_CLIENT_ID}`, // This is the ONLY mandatory field that you need to supply.
          authority: `https://login.microsoftonline.com/${import.meta.env.VITE_TENANT_ID}`, // Replace the placeholder with your tenant info
-         redirectUri: 'http://localhost:5173/login', // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
-         postLogoutRedirectUri: 'http://localhost:5173/login', // Indicates the page to navigate after logout.
+         redirectUri: 'https://healthcare-iot-webapp-aefuedhmb4ekd5de.italynorth-01.azurewebsites.net/login', // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
+         postLogoutRedirectUri: 'https://healthcare-iot-webapp-aefuedhmb4ekd5de.italynorth-01.azurewebsites.net/login', // Indicates the page to navigate after logout.
          navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
      },
      cache: {
