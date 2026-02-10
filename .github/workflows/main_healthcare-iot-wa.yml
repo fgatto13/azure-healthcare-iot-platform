@@ -62,7 +62,8 @@ jobs:
           slot-name: 'Production'
           package: deploy_folder  # Contains index.html at root
           clean: true
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_WA }}
+          publish-profile: ${{ secrets.AZURE_APPSERVICES_PUBLISHPROFILE_WA }}
+
 
 
 
