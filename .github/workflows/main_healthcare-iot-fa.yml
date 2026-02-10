@@ -4,6 +4,9 @@
 
 name: Build and deploy Python project to Azure Function App - healthcare-iot-fa
 
+defaults:
+  run:
+    working-directory: backend/functions
 on:
   push:
     branches:
@@ -35,7 +38,8 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run:
+          pip install -r requirements.txt
 
       # Optional: Add step to run tests here
 
@@ -47,7 +51,7 @@ jobs:
         with:
           name: python-app
           path: |
-            release.zip
+            backend/functions/release.zip
             !venv/
 
   deploy:
@@ -72,4 +76,5 @@ jobs:
           app-name: 'healthcare-iot-fa'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B79479A2EE35466297B0BF5CC5350950 }}
