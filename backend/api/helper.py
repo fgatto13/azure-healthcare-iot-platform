@@ -1,3 +1,8 @@
+#+-----------------------------------+
+#| Created by: fgatto13 @2026-02-06  |
+#+-----------------------------------+
+# helper.py
+
 import base64
 import json
 import logging
