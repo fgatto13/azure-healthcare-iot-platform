@@ -18,7 +18,7 @@ jobs:
       contents: read # Required for actions/checkout
     defaults:
       run:
-        working-directory: ./fronted
+        working-directory: fronted
     steps:
       - uses: actions/checkout@v4
 
