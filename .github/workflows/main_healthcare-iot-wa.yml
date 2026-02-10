@@ -33,10 +33,12 @@ jobs:
           VITE_API_ID: ${{ secrets.VITE_API_ID }}
       - name: Upload frontend build artifact
         run: |
-          mkdir -p artifact
-          cp -R frontend/dist/* artifact/
-          # copy server files
-          cp -R frontend/server/* artifact/
+          mkdir artifact
+          cp -R frontend/dist artifact/dist
+          cp frontend/server.js artifact/
+          cp frontend/package.json artifact/
+          cp frontend/package-lock.json artifact/
+          cp -R frontend/node_modules artifact/node_modules
         shell: bash
       - name: Upload artifact
         uses: actions/upload-artifact@v4
