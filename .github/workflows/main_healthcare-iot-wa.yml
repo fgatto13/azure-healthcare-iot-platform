@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "frontend/**"
+      - ".github/workflows/main_healthcare-iot-wa.yml"
   workflow_dispatch:
 
 jobs:
@@ -13,36 +16,33 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read # Required for actions/checkout
-
+    defaults:
+      run:
+        working-directory: ./fronted
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '24.x'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
 
       - name: Install dependencies and build frontend
         run: |
-          npm install --prefix frontend
-          npm run build --prefix frontend
+          npm install 
+          npm run build 
         env:
           VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
           VITE_TENANT_ID: ${{ secrets.VITE_TENANT_ID }}
           VITE_API_ID: ${{ secrets.VITE_API_ID }}
-
-      - name: Zip frontend build
-        run: |
-          cd frontend
-          zip -r ../frontend.zip dist
-          cd ..
-
       - name: Deploy React frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'healthcare-iot-wa'
           slot-name: 'Production'
-          package: ./frontend
+          package: frontend/dist  # Contains index.html at root
           clean: true
           publish-profile: ${{ secrets.AZURE_APPSERVICES_PUBLISHPROFILE_WA }}
