@@ -32,11 +32,17 @@ jobs:
           VITE_TENANT_ID: ${{ secrets.VITE_TENANT_ID }}
           VITE_API_ID: ${{ secrets.VITE_API_ID }}
 
+      - name: Zip frontend build
+        run: |
+          cd frontend
+          zip -r ../frontend.zip dist
+          cd ..
+
       - name: Deploy React frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'healthcare-iot-wa'
           slot-name: 'Production'
-          package: ./frontend/dist
+          package: ./frontend.zip
           clean: true
           publish-profile: ${{ secrets.AZURE_APPSERVICES_PUBLISHPROFILE_WA }}
