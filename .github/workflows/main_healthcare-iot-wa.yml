@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Deploy Node.js app to Azure Web App - healthcare-iot-wa
+name: Build and deploy Node.js app to Azure Web App - healthcare-iot-wa
 on:
   push:
     branches:
@@ -9,21 +9,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required for actions/checkout
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '24.x'
 
-      - name: Deploy to Azure Web App
+      - name: Install dependencies
+        run: |
+          npm install --prefix frontend
+      - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'healthcare-iot-wa'
           slot-name: 'Production'
-          package: ./frontend     # Your repo folder containing package.json + server.js
-          clean: true
+          package: .
           publish-profile: ${{ secrets.AZURE_APPSERVICES_PUBLISHPROFILE_WA }}
