@@ -4,9 +4,6 @@
 
 name: Build and deploy Python project to Azure Function App - healthcare-iot-fa
 
-defaults:
-  run:
-    working-directory: backend/functions
 on:
   push:
     branches:
@@ -14,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './backend/functions' # set this to the path to your web app project, defaults to the repository root
   PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
 
 jobs:
@@ -78,3 +75,4 @@ jobs:
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B79479A2EE35466297B0BF5CC5350950 }}
+
