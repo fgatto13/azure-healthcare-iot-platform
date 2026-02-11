@@ -22,8 +22,22 @@ export const useMsalAuth = () => {
     } catch (error) {
       if (error instanceof InteractionRequiredAuthError) {
         instance.acquireTokenRedirect(tokenRequest);
+        return null;
       }
       throw error;
+    }
+  };
+
+  const getRoles = async () => {
+    const token = await getAccessToken();
+    if (!token) return [];
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.roles || [];
+    } catch (err) {
+      console.error("Failed to decode access token", err);
+      return [];
     }
   };
 
@@ -31,8 +45,8 @@ export const useMsalAuth = () => {
     instance,
     account,
     isAuthenticated: accounts.length > 0,
-    claims: account?.idTokenClaims,
     inProgress,
     getAccessToken,
+    getRoles, // for UI authorization
   };
 };

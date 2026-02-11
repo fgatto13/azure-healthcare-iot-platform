@@ -4,25 +4,22 @@
 
 # utils.py
 import azure.functions as func
+import os
+
+CORS_ORIGIN = os.environ.get("CORS_ORIGIN", "*")
 
 def cors_response() -> func.HttpResponse:
-    """
-    Responds to preflight OPTIONS requests with proper CORS headers.
-    """
     headers = {
-        "Access-Control-Allow-Origin": "healthcare-iot-wa-eba7h2bye0d8b6ct.italynorth-01.azurewebsites.net",  
+        "Access-Control-Allow-Origin": CORS_ORIGIN,
         "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
     }
     return func.HttpResponse(status_code=200, headers=headers)
 
-
 def add_cors_headers(response: func.HttpResponse) -> func.HttpResponse:
-    """
-    Adds CORS headers to all responses.
-    """
     response.headers.update({
-        "Access-Control-Allow-Origin": "healthcare-iot-wa-eba7h2bye0d8b6ct.italynorth-01.azurewebsites.net", 
+        "Access-Control-Allow-Origin": CORS_ORIGIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
     })
     return response
+

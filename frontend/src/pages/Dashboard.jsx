@@ -14,7 +14,16 @@ export const Dashboard = () => {
   const { getAccessToken } = useMsalAuth();
   const { response, error, loading, fetchData } = useAxios(getAccessToken);
   const [patientId, setPatientId] = useState("");
-  const { claims } = useMsalAuth();
+  const { getRoles } = useMsalAuth();
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const loadRoles = async () => {
+      const r = await getRoles();
+      setRoles(r);
+    };
+    loadRoles();
+  }, []);
 
   // Extract patients from response
   const patients =
@@ -30,12 +39,12 @@ export const Dashboard = () => {
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>An error occurred: {error}</p>}
         <Container className="flex flex-col justify-center content-center gap-3">
-          {claims.roles?.includes('User.Admin') && (
+          {roles.includes("User.Admin") && (
             <Button onClick={() => fetchData(createPatient())}>
               Create New Patient
             </Button>
           )}
-          {claims.roles?.some(r => ['User.Admin', 'User.Doctor'].includes(r)) && (
+          {(roles.includes("User.Admin") || roles.includes("User.Doctor")) && (
             <Button onClick={() => fetchData(updatePatient())}>
               Create / Update Patient
             </Button>

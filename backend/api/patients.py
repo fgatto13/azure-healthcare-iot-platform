@@ -1,14 +1,14 @@
 #+-----------------------------------+
 #| Created by: fgatto13 @2026-02-10  |
 #+-----------------------------------+
-
 # patients.py
+
 import azure.functions as func
 import logging
 import json
 import uuid
 
-from auth import parse_jwt
+from auth import validate_jwt
 from utils import cors_response, add_cors_headers
 
 # ---- Route Handlers ----
@@ -31,7 +31,10 @@ def patients_route(req: func.HttpRequest) -> func.HttpResponse:
 
     token = parts[1]
 
-    claims = parse_jwt(token)
+    try:
+        claims = validate_jwt(token)
+    except ValueError:
+        return add_cors_headers(func.HttpResponse("Unauthorized", status_code=401))
     roles = claims.get("roles") or []
 
     if req.method == "GET":
@@ -155,7 +158,10 @@ def update_patient_route(req: func.HttpRequest) -> func.HttpResponse:
 
     token = parts[1]
 
-    claims = parse_jwt(token)
+    try:
+        claims = validate_jwt(token)
+    except ValueError:
+        return add_cors_headers(func.HttpResponse("Unauthorized", status_code=401))
     roles = claims.get("roles") or []
 
     if not any(r in roles for r in ["User.Admin", "User.Doctor"]):

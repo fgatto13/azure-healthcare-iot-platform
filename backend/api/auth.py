@@ -1,24 +1,40 @@
 #+-----------------------------------+
 #| Created by: fgatto13 @2026-02-10  |
 #+-----------------------------------+
-# auth.py
+import os
 import logging
-import jwt  # PyJWT, used to decode Entra ID JWTs
+import jwt
+from jwt import PyJWKClient, InvalidTokenError, ExpiredSignatureError
 
-def parse_jwt(token: str) -> dict:
+TENANT_ID = os.environ["TENANT_ID"]
+CLIENT_ID = os.environ["CLIENT_ID"]  # backend API app id
+
+def validate_jwt(token: str) -> dict:
     """
-    Parse JWT token and return claims.
+    Validates an Entra ID JWT using PyJWKClient.
+    Returns claims dict if valid, raises ValueError if invalid.
     """
     try:
-        # Note: For real use, verify signature and issuer!
-        return jwt.decode(token, options={"verify_signature": False})
-    except Exception as e:
-        logging.error(f"Failed to parse JWT: {e}")
-        return {}
+        jwks_url = f"https://login.microsoftonline.com/{TENANT_ID}/discovery/v2.0/keys"
+        issuer_url = f"https://login.microsoftonline.com/{TENANT_ID}/v2.0"
+        audience = f"api://{CLIENT_ID}"
 
+        jwks_client = PyJWKClient(jwks_url)
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
 
-def log_auth_header(header: str):
-    """
-    Debugging helper to log the Authorization header.
-    """
-    logging.info(f"Authorization header: {header}")
+        claims = jwt.decode(
+            token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience=audience,
+            issuer=issuer_url,
+        )
+
+        return claims
+
+    except ExpiredSignatureError:
+        logging.warning("JWT expired")
+        raise ValueError("Token expired")
+    except InvalidTokenError as e:
+        logging.warning(f"JWT invalid: {e}")
+        raise ValueError("Unauthorized")
