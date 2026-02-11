@@ -10,7 +10,7 @@ def cors_response() -> func.HttpResponse:
     Responds to preflight OPTIONS requests with proper CORS headers.
     """
     headers = {
-        "Access-Control-Allow-Origin": "*",  # replace "*" with your frontend URL in production
+        "Access-Control-Allow-Origin": "healthcare-iot-wa-eba7h2bye0d8b6ct.italynorth-01.azurewebsites.net",  
         "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
     }
@@ -22,7 +22,7 @@ def add_cors_headers(response: func.HttpResponse) -> func.HttpResponse:
     Adds CORS headers to all responses.
     """
     response.headers.update({
-        "Access-Control-Allow-Origin": "*",  # replace "*" with frontend URL in production
+        "Access-Control-Allow-Origin": "healthcare-iot-wa-eba7h2bye0d8b6ct.italynorth-01.azurewebsites.net", 
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
     })
     return response
