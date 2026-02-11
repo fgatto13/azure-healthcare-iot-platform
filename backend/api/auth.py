@@ -2,9 +2,12 @@
 #| Created by: fgatto13 @2026-02-10  |
 #+-----------------------------------+
 import os
+from dotenv import load_dotenv
 import logging
 import jwt
 from jwt import PyJWKClient, InvalidTokenError, ExpiredSignatureError
+
+load_dotenv()
 
 TENANT_ID = os.environ["TENANT_ID"]
 CLIENT_ID = os.environ["CLIENT_ID"]  # backend API app id
