@@ -23,44 +23,16 @@ jobs:
     permissions:
       contents: read
 
-    defaults:
-      run:
-        working-directory: backend/api
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Set environment variables for build
-        run: |
-          echo "TENANT_ID=${{ secrets.TENANT_ID }}" >> $GITHUB_ENV
-          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> $GITHUB_ENV
-          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> $GITHUB_ENV
-
-      - name: Create virtual environment and install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Package Function App
-        run: |
-          zip -r functionapp.zip .
-
-      - name: Deploy zip to Azure Function
+      - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
           app-name: 'healthcare-iot-fa'
           slot-name: 'Production'
-          package: '${{ github.workspace }}/backend/api/functionapp.zip'
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           publish-profile: ${{ secrets.AZURE_APPSERVICES_PUBLISHPROFILE_FA1 }}
-          scm-do-build-during-deployment: false
-          enable-oryx-build: false
-
-
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
