@@ -51,7 +51,7 @@ jobs:
 
       - name: Package Function App
         run: |
-          zip -r functionapp.zip * .[^.]*
+          zip -r functionapp.zip
 
       - name: Deploy zip to Azure Function
         uses: Azure/functions-action@v1
