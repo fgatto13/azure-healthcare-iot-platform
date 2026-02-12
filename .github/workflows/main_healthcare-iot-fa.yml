@@ -58,8 +58,9 @@ jobs:
         with:
           app-name: 'healthcare-iot-fa'
           slot-name: 'Production'
-          package: 'functionapp.zip'
+          package: '${{ github.workspace }}/backend/api/functionapp.zip'
           publish-profile: ${{ secrets.AZURE_APPSERVICES_PUBLISHPROFILE_FA1 }}
           scm-do-build-during-deployment: false
           enable-oryx-build: false
+
 
