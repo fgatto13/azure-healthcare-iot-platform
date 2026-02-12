@@ -5,7 +5,9 @@ import os
 import logging
 import jwt
 from jwt import PyJWKClient, InvalidTokenError, ExpiredSignatureError
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def validate_jwt(token: str) -> dict:
     """
@@ -13,8 +15,8 @@ def validate_jwt(token: str) -> dict:
     Returns claims dict if valid, raises ValueError if invalid.
     """
     try:
-        TENANT_ID = os.environ.get("TENANT_ID")
-        CLIENT_ID = os.environ.get("CLIENT_ID")  # backend API app id
+        TENANT_ID = os.getenv("TENANT_ID")
+        CLIENT_ID = os.getenv("CLIENT_ID")  # backend API app id
         if not TENANT_ID or not CLIENT_ID:
             raise ValueError("Missing TENANT_ID or CLIENT_ID environment variables")
         jwks_url = f"https://login.microsoftonline.com/{TENANT_ID}/discovery/v2.0/keys"
