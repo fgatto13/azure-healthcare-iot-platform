@@ -114,7 +114,7 @@ def get_patient_route(req: func.HttpRequest) -> func.HttpResponse:
 
     auth_header = req.headers.get("Authorization")
     if not auth_header:
-        return add_cors_headers(func.HttpResponse("Unauthorized", status_code=401))
+        return add_cors_headers(func.HttpResponse("Unauthorized: No auth header found", status_code=401))
 
     # Ensure it starts with "Bearer " and has a token
     parts = auth_header.split(" ", 1)
@@ -161,7 +161,7 @@ def update_patient_route(req: func.HttpRequest) -> func.HttpResponse:
     try:
         claims = validate_jwt(token)
     except ValueError:
-        return add_cors_headers(func.HttpResponse("Unauthorized", status_code=401))
+        return add_cors_headers(func.HttpResponse("Unauthorized: token validation error", status_code=401))
     roles = claims.get("roles") or []
 
     if not any(r in roles for r in ["User.Admin", "User.Doctor"]):

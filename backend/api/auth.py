@@ -48,3 +48,5 @@ def validate_jwt(token: str) -> dict:
         logging.warning(f"TOKEN ISSUER: {unverified.get('iss')}")
         logging.warning(f"EXPECTED ISSUER: https://login.microsoftonline.com/{TENANT_ID}/v2.0")
         raise ValueError("Unauthorized")
+    except Exception as e:
+        raise ValueError(f"Server error: {e}")
