@@ -11,10 +11,9 @@ import {
 import { useMsalAuth } from "../hooks/useMsalAuth";
 
 export const Dashboard = () => {
-  const { getAccessToken } = useMsalAuth();
+  const { getAccessToken, getRoles } = useMsalAuth();
   const { response, error, loading, fetchData } = useAxios(getAccessToken);
   const [patientId, setPatientId] = useState("");
-  const { getRoles } = useMsalAuth();
   const [roles, setRoles] = useState([]);
 
   useEffect(() => {

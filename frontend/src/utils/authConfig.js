@@ -3,9 +3,9 @@ import { LogLevel } from "@azure/msal-browser";
  export const msalConfig = {
      auth: {
          clientId: `${import.meta.env.VITE_CLIENT_ID}`, // This is the ONLY mandatory field that you need to supply.
-         authority: `https://login.microsoftonline.com/${import.meta.env.VITE_TENANT_ID}`, // Replace the placeholder with your tenant info
-         redirectUri: 'https://healthcare-iot-wa-eba7h2bye0d8b6ct.italynorth-01.azurewebsites.net/login', // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
-         postLogoutRedirectUri: 'https://healthcare-iot-wa-eba7h2bye0d8b6ct.italynorth-01.azurewebsites.net/login', // Indicates the page to navigate after logout.
+         authority: `https://login.microsoftonline.com/${import.meta.env.VITE_TENANT_ID}`,
+         redirectUri: `${import.meta.env.VITE_REDIRECT_URL}`, // Points to window.location.origin.
+         postLogoutRedirectUri: `${import.meta.env.VITE_REDIRECT_URL}`, // Indicates the page to navigate after logout.
          navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
      },
      cache: {
@@ -46,9 +46,18 @@ import { LogLevel } from "@azure/msal-browser";
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
  export const loginRequest = {
-     scopes: [],
- };
+  scopes: [
+    "openid",
+    "profile",
+    "email",
+    `api://${import.meta.env.VITE_API_ID}/access_as_user`, // backend API scope
+  ],
+};
 
+// Token request for backend calls
+export const tokenRequest = {
+  scopes: [`api://${import.meta.env.VITE_API_ID}/access_as_user`],
+};
  /**
  * An optional silentRequest object can be used to achieve silent SSO
  * between applications by providing a "login_hint" property.

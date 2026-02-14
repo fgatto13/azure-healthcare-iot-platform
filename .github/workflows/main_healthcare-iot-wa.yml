@@ -38,6 +38,7 @@ jobs:
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
           VITE_TENANT_ID: ${{ secrets.VITE_TENANT_ID }}
           VITE_API_ID: ${{ secrets.VITE_API_ID }}
+          VITE_REDIRECT_URL: ${{ secrets.VITE_REDIRECT_URL }}
       - name: Deploy React frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
