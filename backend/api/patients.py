@@ -7,7 +7,7 @@ import azure.functions as func
 import logging
 import json
 import uuid
-
+import logging
 from auth import validate_jwt
 from utils import cors_response, add_cors_headers
 
@@ -17,11 +17,14 @@ def patients_route(req: func.HttpRequest) -> func.HttpResponse:
     """
     Handles /patients for GET (list) and POST (create)
     """
+    logging.info("Patients route hit")
     if req.method == "OPTIONS":
         return cors_response()
 
     auth_header = req.headers.get("Authorization")
+    logging.info(f"Auth header present: {bool(auth_header)}")
     if not auth_header:
+        logging.warning("Missing Authorization header")
         return add_cors_headers(func.HttpResponse("Unauthorized", status_code=401))
 
     # Ensure it starts with "Bearer " and has a token
