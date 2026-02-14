@@ -7,42 +7,34 @@ import azure.functions as func
 import logging
 import json
 import uuid
-import logging
+
 from auth import validate_jwt
 from utils import cors_response, add_cors_headers
 
 # ---- Route Handlers ----
-def patients_route(req: func.HttpRequest) -> func.HttpResponse:
-    """ 
-    Handles /patients for GET (list) and POST (create) 
-    """
-    logging.info("Patients route hit")
 
+def patients_route(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Handles /patients for GET (list) and POST (create)
+    """
     if req.method == "OPTIONS":
         return cors_response()
 
     auth_header = req.headers.get("Authorization")
-
     if not auth_header:
-        return add_cors_headers(
-            func.HttpResponse("Unauthorized: no_auth_header", status_code=401)
-        )
+        return add_cors_headers(func.HttpResponse("Unauthorized: No auth header found", status_code=401))
 
+    # Ensure it starts with "Bearer " and has a token
     parts = auth_header.split(" ", 1)
     if len(parts) != 2 or parts[0] != "Bearer" or not parts[1]:
-        return add_cors_headers(
-            func.HttpResponse("Unauthorized: malformed_header", status_code=401)
-        )
+        return add_cors_headers(func.HttpResponse("Malformed Authorization header", status_code=401))
 
     token = parts[1]
 
     try:
         claims = validate_jwt(token)
     except ValueError:
-        return add_cors_headers(
-            func.HttpResponse("Unauthorized: token_validation_failed", status_code=401)
-        )
-
+        return add_cors_headers(func.HttpResponse("Unauthorized: token validation error", status_code=401))
     roles = claims.get("roles") or []
 
     if req.method == "GET":
